@@ -11,6 +11,11 @@ use App\Solid_design\GoodGarden;
 use App\Creational\AbstractFactory\Factories\DrugDealer;
 use App\Creational\AbstractFactory\Factories\RiceFarmer;
 use App\Creational\AbstractFactory\ClientSimulator;
+use App\Creational\Builder\Architect;
+use App\Creational\Builder\NoviceCarpenter;
+use App\Creational\Builder\ExpertCarpenter;
+use App\Creational\FactoryMethod\FactoryMarijuanaGarden;
+use App\Creational\Prototype\Circle;
 
 
 Route::get('/', function () {
@@ -63,4 +68,45 @@ Route::get('/factory', function () {
         : new RiceFarmer();
 
     return response()->json(ClientSimulator::simulate($merchant));
+});
+
+Route::get('/builder', function () {
+    $director = new Architect();
+
+    $builder1 = new NoviceCarpenter();
+    $builder2 = new ExpertCarpenter();
+
+    $director->createMyOldHouse($builder1);
+    $director->createMyOldHouse($builder2);
+
+    $output  = "<pre>";
+    $output .= "-- Novice Carpenter --\n";
+    $output .= $builder1->getHouse() . "\n";
+    $output .= "-- Expert Carpenter --\n";
+    $output .= $builder2->getHouse();
+    $output .= "</pre>";
+
+    return $output;
+});
+
+Route::get('/factory-method', function () {
+    $garden = new FactoryMarijuanaGarden();
+    $plants = $garden->grow();
+
+    foreach ($plants as $plant) {
+        $plant->consume();
+    }
+});
+
+
+Route::get('/prototype', function () {
+    $circle1 = new Circle(10, 20, 'red', 15);
+    $circle2 = $circle1->clone();
+
+    $circle2->color = 'blue';
+
+    return response()->json([
+        'original' => $circle1,
+        'clone' => $circle2
+    ]);
 });
